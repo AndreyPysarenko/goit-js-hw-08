@@ -1,37 +1,43 @@
 import throttle from 'lodash.throttle';
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  email: document.querySelector('[name="email"]'),
-  textarea: document.querySelector('[name="message"]'),
-};
-
-refs.form.addEventListener('submit', onFormSubmit);
-refs.form.addEventListener('input', throttle(onFormInput, 500));
-
+const onFormRef = document.querySelector('.feedback-form');
+const { email, message } = onFormRef.elements;
 const STORAGE_KEY = 'feedback-form-state';
-let formData = {};
+
+onFormRef.addEventListener('submit', onFormSubmit);
+onFormRef.addEventListener('input', throttle(onFormInput, 500));
 
 populateForm();
 
 function onFormSubmit(event) {
   event.preventDefault();
+  if (email.value === '' || message.value === '')
+    return alert('Заповніть будь ласка всі поля!');
+
+  const consoleMessage = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  console.log(
+    `email: ${consoleMessage.email}; message: ${consoleMessage.message}`
+  );
   event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
-  console.log(formData);
-  formData = {};
 }
 
 function onFormInput() {
-  formData[refs.email.name] = refs.email.value;
-  formData[refs.textarea.name] = refs.textarea.value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  const userEmail = email.value;
+  const userMessage = message.value;
+
+  const userDate = {
+    email: userEmail,
+    message: userMessage,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(userDate));
 }
 
 function populateForm() {
-  const savedText = localStorage.getItem(STORAGE_KEY);
-  if (savedText) {
-    refs.email.value = JSON.parse(savedText).email;
-    refs.textarea.value = JSON.parse(savedText).message;
+  const saveDate = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  if (saveDate) {
+    email.value = saveDate.email;
+    message.value = saveDate.message;
   }
 }
