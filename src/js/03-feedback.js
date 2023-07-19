@@ -15,9 +15,8 @@ function onFormSubmit(event) {
     return alert('Заповніть будь ласка всі поля!');
 
   const consoleMessage = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  console.log(
-    `email: ${consoleMessage.email}; message: ${consoleMessage.message}`
-  );
+  const formDate = {email: consoleMessage.email, message: consoleMessage.message};
+  console.log(formDate);
   event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
 }
